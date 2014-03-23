@@ -1,4 +1,5 @@
 class PostsController < ApplicationController
+  before_filter :authorize_blogger!, :except => [:index, :show]
 
 	def new
   		@post = Post.new
