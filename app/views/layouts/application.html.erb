@@ -7,14 +7,12 @@
   <%= csrf_meta_tags %>
 </head>
 <body>
-	<% if notice %>
-  		<p class="alert alert-notice"><%= notice %></p>
-	<% end %>
-	<% if alert %>
-  		<p class="alert alert-error"><%= alert %></p>
-	<% end %>
+	<p class="notice"><%= notice %></p>
+  <p class="alert"><%= alert %></p>
 
-<%= yield %>
-
+  <div id="secondaryContent">
+      <%= render 'common/session' %>
+  </div>
+  <%= yield %>
 </body>
 </html>
