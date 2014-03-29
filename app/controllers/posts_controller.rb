@@ -1,5 +1,5 @@
 class PostsController < ApplicationController
-  before_filter :authorize_blogger!, :except => [:index, :show]
+  before_filter :authorize_blogger!, :except => [:index, :show, :tagged]
   rescue_from Pundit::NotAuthorizedError, :with => :record_not_found
 
 	def new
@@ -7,7 +7,7 @@ class PostsController < ApplicationController
 	end
 
 	def create
-  		@post = Post.new(params[:post].permit(:title, :text))
+      @post = Post.new(post_params)
       authorize @post
   	 	if @post.save
     		redirect_to @post
@@ -21,10 +21,16 @@ class PostsController < ApplicationController
   end	
 
 	def index
-  		@posts = Post
+    if params[:tag].present?
+      @posts = Post
+              .paginate(Post.tagged_with(params[:tag]), :page => params[:page], :per_page => 10)
+              .order('created_at DESC')
+    else
+      @posts = Post
               .paginate(:page => params[:page], :per_page => 10)
               .order('created_at DESC')
-	end
+    end
+  end
 
 	def edit
   		@post = Post.find(params[:id])
@@ -34,7 +40,7 @@ class PostsController < ApplicationController
 	def update
   		@post = Post.find(params[:id])
       authorize @post 
-  		if @post.update(params[:post].permit(:title, :text))
+  		if @post.update(post_params)
     		redirect_to @post
   		else
     		render 'edit'
@@ -48,9 +54,17 @@ class PostsController < ApplicationController
  	    redirect_to posts_path
 	end
 
+  def tagged
+    if params[:tag].present? 
+      @posts = Post.tagged_with(params[:tag])
+    else 
+      @posts = Post.postall
+    end  
+  end
+
 	private
     def post_params
-    	params.require(:post).permit(:title, :text)
+      params.require(:post).permit(:title, :text, :tag_list)
   	end
 
     def record_not_found
