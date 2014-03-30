@@ -1,4 +1,4 @@
-<%= form_for @post do |f| %>
+<%= form_for @post, :html => { :multipart => true }  do |f| %>
   <% if @post.errors.any? %>
   <div id="error_explanation">
     <h2><%= pluralize(@post.errors.count, "error") %> prohibited
@@ -23,6 +23,11 @@
   <p>
     <%= f.label :tags, "Tags (separated by commas)" %>
     <%= f.text_field :tag_list %>
+  </p>
+
+  <p>
+    <%= f.label :avatar %><br>
+    <%= f.file_field :avatar %>
   </p>
   
   <p>
